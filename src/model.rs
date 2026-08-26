@@ -97,6 +97,7 @@ use uuid::Uuid;
 
 
 
+    #[derive(Debug,Clone)]
     pub struct KGraph<'a>{
         pub tree: Option<KNode<'a>>,
         pub adj_l: HashMap<uuid::Uuid,HashMap<uuid::Uuid,KNode<'a>>>
@@ -372,12 +373,40 @@ use uuid::Uuid;
             }
         }
 
+        pub fn find_nodes_within_distance(&self, start_uuid: Uuid, min_dist: usize, max_dist: usize) -> Vec<(Uuid, usize)> {
+            let mut result = Vec::new();
+            let mut queue = std::collections::VecDeque::new();
+            let mut visited = HashSet::new();
+
+            queue.push_back((start_uuid, 0));
+            visited.insert(start_uuid);
+
+            while let Some((uuid, dist)) = queue.pop_front() {
+                if dist >= min_dist && dist <= max_dist && uuid != start_uuid {
+                    result.push((uuid, dist));
+                }
+
+                if dist < max_dist {
+                    for neighbor_uuid in self.get_neighbors(uuid) {
+                        if !visited.contains(&neighbor_uuid) {
+                            visited.insert(neighbor_uuid);
+                            queue.push_back((neighbor_uuid, dist + 1));
+                        }
+                    }
+                }
+            }
+
+            result.sort_by_key(|(_, dist)| *dist);
+            result
+        }
+
 
 
 
     }
 
 
+    #[derive(Debug,Clone)]
     pub struct KNode<'a>{
         pub data: &'a [u8],
         pub uuid: Uuid,
@@ -410,8 +439,206 @@ use uuid::Uuid;
         pub fn remove_parent(&mut self, parent_uuid: &Uuid) {
             self.parents.retain(|x| x != parent_uuid);
         }
+
+        pub fn get_str(&self) -> String{
+            String::from_utf8(self.data.to_vec()).unwrap()
+        }
     }
 
+
+    pub fn generate_sample_graph() -> KGraph<'static> {
+        let mut graph = KGraph::new();
+        
+        // Linear Data Structures
+        let array_node = graph.add_node(b"Array");
+        let dynamic_array_node = graph.add_node(b"DynamicArray");
+        let linked_list_node = graph.add_node(b"LinkedList");
+        let singly_linked_node = graph.add_node(b"SinglyLinkedList");
+        let doubly_linked_node = graph.add_node(b"DoublyLinkedList");
+        let circular_linked_node = graph.add_node(b"CircularLinkedList");
+        
+        // Stack and Queue
+        let stack_node = graph.add_node(b"Stack");
+        let queue_node = graph.add_node(b"Queue");
+        let deque_node = graph.add_node(b"Deque");
+        let priority_queue_node = graph.add_node(b"PriorityQueue");
+        
+        // Tree Data Structures
+        let tree_node = graph.add_node(b"Tree");
+        let binary_tree_node = graph.add_node(b"BinaryTree");
+        let bst_node = graph.add_node(b"BinarySearchTree");
+        let avl_node = graph.add_node(b"AVLTree");
+        let red_black_node = graph.add_node(b"RedBlackTree");
+        let b_tree_node = graph.add_node(b"BTree");
+        let b_plus_tree_node = graph.add_node(b"BPlusTree");
+        let trie_node = graph.add_node(b"Trie");
+        let prefix_tree_node = graph.add_node(b"PrefixTree");
+        let segment_tree_node = graph.add_node(b"SegmentTree");
+        let fenwick_tree_node = graph.add_node(b"FenwickTree");
+        let heap_node = graph.add_node(b"Heap");
+        let min_heap_node = graph.add_node(b"MinHeap");
+        let max_heap_node = graph.add_node(b"MaxHeap");
+        let binary_heap_node = graph.add_node(b"BinaryHeap");
+        
+        // Graph Data Structures
+        let graph_node = graph.add_node(b"Graph");
+        let directed_graph_node = graph.add_node(b"DirectedGraph");
+        let undirected_graph_node = graph.add_node(b"UndirectedGraph");
+        let weighted_graph_node = graph.add_node(b"WeightedGraph");
+        let complete_graph_node = graph.add_node(b"CompleteGraph");
+        let bipartite_graph_node = graph.add_node(b"BipartiteGraph");
+        
+        // Hash-based Structures
+        let hash_table_node = graph.add_node(b"HashTable");
+        let hash_map_node = graph.add_node(b"HashMap");
+        let hash_set_node = graph.add_node(b"HashSet");
+        let bloom_filter_node = graph.add_node(b"BloomFilter");
+        
+        // Graph Algorithms
+        let traversal_node = graph.add_node(b"Traversal");
+        let dfs_node = graph.add_node(b"DFS");
+        let bfs_node = graph.add_node(b"BFS");
+        let cycle_node = graph.add_node(b"Cycle");
+        let path_node = graph.add_node(b"Path");
+        let shortest_path_node = graph.add_node(b"ShortestPath");
+        let dijkstra_node = graph.add_node(b"Dijkstra");
+        let bellman_ford_node = graph.add_node(b"BellmanFord");
+        let floyd_warshall_node = graph.add_node(b"FloydWarshall");
+        let a_star_node = graph.add_node(b"AStar");
+        let mst_node = graph.add_node(b"MinimumSpanningTree");
+        let prim_node = graph.add_node(b"Prim");
+        let kruskal_node = graph.add_node(b"Kruskal");
+        let topological_node = graph.add_node(b"TopologicalSort");
+        let kahn_node = graph.add_node(b"Kahn");
+        let dfs_topo_node = graph.add_node(b"DFSTopological");
+        
+        // Complexity Concepts
+        let o1_node = graph.add_node(b"O1");
+        let on_node = graph.add_node(b"On");
+        let ologn_node = graph.add_node(b"Ologn");
+        let onlogn_node = graph.add_node(b"Onlogn");
+        let on2_node = graph.add_node(b"On2");
+        
+        // Usage Patterns
+        let random_access_node = graph.add_node(b"RandomAccess");
+        let sequential_access_node = graph.add_node(b"SequentialAccess");
+        let insertion_node = graph.add_node(b"FastInsertion");
+        let deletion_node = graph.add_node(b"FastDeletion");
+        let search_node = graph.add_node(b"FastSearch");
+        let memory_efficient_node = graph.add_node(b"MemoryEfficient");
+        
+        // Linear Structure Relationships
+        graph.add_edge(array_node, dynamic_array_node);
+        graph.add_edge(linked_list_node, singly_linked_node);
+        graph.add_edge(linked_list_node, doubly_linked_node);
+        graph.add_edge(linked_list_node, circular_linked_node);
+        graph.add_edge(dynamic_array_node, stack_node);
+        graph.add_edge(dynamic_array_node, queue_node);
+        graph.add_edge(dynamic_array_node, deque_node);
+        graph.add_edge(heap_node, priority_queue_node);
+        
+        // Tree Hierarchy
+        graph.add_edge(tree_node, binary_tree_node);
+        graph.add_edge(binary_tree_node, bst_node);
+        graph.add_edge(bst_node, avl_node);
+        graph.add_edge(bst_node, red_black_node);
+        graph.add_edge(tree_node, b_tree_node);
+        graph.add_edge(b_tree_node, b_plus_tree_node);
+        graph.add_edge(trie_node, prefix_tree_node);
+        graph.add_edge(tree_node, trie_node);
+        graph.add_edge(tree_node, segment_tree_node);
+        graph.add_edge(tree_node, fenwick_tree_node);
+        graph.add_edge(heap_node, binary_heap_node);
+        graph.add_edge(binary_heap_node, min_heap_node);
+        graph.add_edge(binary_heap_node, max_heap_node);
+        
+        // Graph Hierarchy
+        graph.add_edge(graph_node, directed_graph_node);
+        graph.add_edge(graph_node, undirected_graph_node);
+        graph.add_edge(graph_node, weighted_graph_node);
+        graph.add_edge(graph_node, complete_graph_node);
+        graph.add_edge(graph_node, bipartite_graph_node);
+        
+        // Hash Structure Relationships
+        graph.add_edge(hash_table_node, hash_map_node);
+        graph.add_edge(hash_table_node, hash_set_node);
+        graph.add_edge(hash_table_node, bloom_filter_node);
+        
+        // Algorithm Relationships
+        graph.add_edge(traversal_node, dfs_node);
+        graph.add_edge(traversal_node, bfs_node);
+        graph.add_edge(graph_node, traversal_node);
+        graph.add_edge(graph_node, cycle_node);
+        graph.add_edge(graph_node, path_node);
+        graph.add_edge(path_node, shortest_path_node);
+        graph.add_edge(shortest_path_node, dijkstra_node);
+        graph.add_edge(shortest_path_node, bellman_ford_node);
+        graph.add_edge(shortest_path_node, floyd_warshall_node);
+        graph.add_edge(shortest_path_node, a_star_node);
+        graph.add_edge(graph_node, mst_node);
+        graph.add_edge(mst_node, prim_node);
+        graph.add_edge(mst_node, kruskal_node);
+        graph.add_edge(graph_node, topological_node);
+        graph.add_edge(topological_node, kahn_node);
+        graph.add_edge(topological_node, dfs_topo_node);
+        
+        // Complexity Ordering (O(1) < O(log n) < O(n) < O(n log n) < O(n²))
+        graph.add_edge(o1_node, ologn_node);
+        graph.add_edge(ologn_node, on_node);
+        graph.add_edge(on_node, onlogn_node);
+        graph.add_edge(onlogn_node, on2_node);
+        
+        // Data Structure to Complexity Mappings
+        graph.add_edge(array_node, o1_node);
+        graph.add_edge(array_node, random_access_node);
+        graph.add_edge(dynamic_array_node, on_node);
+        graph.add_edge(linked_list_node, on_node);
+        graph.add_edge(linked_list_node, sequential_access_node);
+        graph.add_edge(linked_list_node, insertion_node);
+        graph.add_edge(linked_list_node, deletion_node);
+        graph.add_edge(stack_node, o1_node);
+        graph.add_edge(stack_node, insertion_node);
+        graph.add_edge(queue_node, o1_node);
+        graph.add_edge(queue_node, insertion_node);
+        graph.add_edge(hash_table_node, o1_node);
+        graph.add_edge(hash_table_node, search_node);
+        graph.add_edge(bst_node, ologn_node);
+        graph.add_edge(bst_node, search_node);
+        graph.add_edge(avl_node, ologn_node);
+        graph.add_edge(avl_node, search_node);
+        graph.add_edge(red_black_node, ologn_node);
+        graph.add_edge(red_black_node, search_node);
+        graph.add_edge(heap_node, o1_node);
+        graph.add_edge(heap_node, search_node);
+        graph.add_edge(trie_node, on_node);
+        graph.add_edge(trie_node, search_node);
+        graph.add_edge(bloom_filter_node, o1_node);
+        graph.add_edge(bloom_filter_node, memory_efficient_node);
+        
+        // Algorithm Complexity
+        graph.add_edge(dijkstra_node, onlogn_node);
+        graph.add_edge(bellman_ford_node, on2_node);
+        graph.add_edge(floyd_warshall_node, on2_node);
+        graph.add_edge(prim_node, onlogn_node);
+        graph.add_edge(kruskal_node, onlogn_node);
+        graph.add_edge(topological_node, on_node);
+        
+        // Usage Pattern Relationships
+        graph.add_edge(array_node, random_access_node);
+        graph.add_edge(linked_list_node, sequential_access_node);
+        graph.add_edge(stack_node, insertion_node);
+        graph.add_edge(queue_node, insertion_node);
+        graph.add_edge(hash_table_node, search_node);
+        graph.add_edge(bloom_filter_node, memory_efficient_node);
+        
+        // Cross-structure relationships
+        graph.add_edge(bst_node, heap_node);
+        graph.add_edge(priority_queue_node, heap_node);
+        graph.add_edge(hash_map_node, search_node);
+        graph.add_edge(hash_set_node, search_node);
+        
+        graph
+    }
 
     pub fn perform(args: Vec<&str>) -> String{
         let mut ret = "".to_string();

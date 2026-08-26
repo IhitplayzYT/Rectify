@@ -13,6 +13,7 @@ pub mod Helper{
         pub dbg: bool,
         pub ipipe: Option<String>,
         pub opipe: Option<String>,
+        pub sess: bool,
     }
 
 
@@ -24,7 +25,7 @@ pub mod Helper{
 
     impl CLI{
         pub fn new() -> Self{
-            Self {dbg: false,ipipe:None,opipe:None}
+            Self {dbg: false,ipipe:None,opipe:None,sess:true}
         }
 
         pub fn Parse_Args(&mut self){
@@ -38,6 +39,8 @@ pub mod Helper{
                     self.ipipe = Some(i[i.find("=").unwrap()+1..].to_string());
                 } else if i.starts_with("--opipe=") || i.starts_with("-op="){
                     self.opipe = Some(i[i.find("=").unwrap()+1..].to_string());
+                } else if i == "--session" || i == "--sess" || i == "-s" {
+                    self.sess = if self.sess {false}else{true};
                 }else{
                     Help();
                 }
