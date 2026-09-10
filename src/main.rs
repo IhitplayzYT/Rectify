@@ -1,6 +1,5 @@
-use crate::model::model::{KGraph, perform, generate_sample_graph};
-use crate::{helper::Helper::CLI, model::model::Pipe};
-use std::env::args_os;
+use crate::model::model::{generate_sample_graph};
+use crate::{helper::helper::CLI, model::model::Pipe};
 use std::fs;
 use std::io::{Read, Write};
 use std::os::unix::fs::FileTypeExt;
@@ -28,12 +27,12 @@ fn init_fifo(path: &str) {
 
 fn main() {
     let mut clargs = CLI::new();
-    clargs.Parse_Args();
-    let mut knowledge = generate_sample_graph();
+    clargs.parse_args();
+    let knowledge = generate_sample_graph();
     if clargs.dbg{
         println!("{clargs:?}");
     }
-    let mut pipe = Arc::new(Mutex::new(if &clargs.ipipe != &clargs.opipe{
+    let pipe = Arc::new(Mutex::new(if &clargs.ipipe != &clargs.opipe{
         Pipe::new(false)
     }else{
         Pipe::new(true)
@@ -61,7 +60,7 @@ fn main() {
                 Ok(0) => {continue;}
                 Ok(n) => {
                     let data = String::from_utf8_lossy(&buffer[..n]).to_string();
-                    pipe_clone_ip.lock().unwrap().append(data.clone(), Some(crate::model::model::e_Pipe_io::Rx));
+                    pipe_clone_ip.lock().unwrap().append(data.clone(), Some(crate::model::model::EPipeIo::Rx));
                 }
                 Err(e) => { panic!("Failed to read from input FIFO: {}", e);}
             }
@@ -76,7 +75,7 @@ fn main() {
                 Ok(0) => {continue;}
                 Ok(n) => {
                     let data = String::from_utf8_lossy(&buffer[..n]).to_string();
-                    pipe_clone_op.lock().unwrap().append(data.clone(), Some(crate::model::model::e_Pipe_io::Tx));
+                    pipe_clone_op.lock().unwrap().append(data.clone(), Some(crate::model::model::EPipeIo::Tx));
                 }
                 Err(e) => { panic!("Failed to read from output FIFO: {}", e);}
             }
@@ -86,7 +85,7 @@ fn main() {
 
 
     let mut write_file = fs::OpenOptions::new().write(true).open(op).expect("Failed to open output FIFO for writing");
-    let curp = knowledge.tree.as_ref().unwrap().uuid;
+    let _curp = knowledge.tree.as_ref().unwrap().uuid;
     loop {
         thread::sleep(std::time::Duration::from_millis(10));        
         let (rx_data, tx_data) = pipe.lock().unwrap().peek(None);

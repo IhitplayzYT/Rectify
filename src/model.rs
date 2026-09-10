@@ -10,7 +10,7 @@ use uuid::Uuid;
         pub is_same: bool
     }
 
-    pub enum e_Pipe_io{ 
+    pub enum EPipeIo { 
         Rx,
         Tx        
     }
@@ -20,16 +20,16 @@ use uuid::Uuid;
             Self { tx: vec![], rx: vec![], is_same}
         }
 
-        pub fn append(&mut self,data: String,ep: Option<e_Pipe_io>) {
+        pub fn append(&mut self,data: String,ep: Option<EPipeIo>) {
             if self.is_same{
                 self.tx.push(data);
             }else{
                 if let Some(e) = ep{
                     match e{
-                        e_Pipe_io::Rx => {
+                        EPipeIo::Rx => {
                             self.rx.push(data);
                         },
-                        e_Pipe_io::Tx => {
+                        EPipeIo::Tx => {
                             self.tx.push(data);
                         },
                     }
@@ -40,13 +40,13 @@ use uuid::Uuid;
             }
         }
 
-    pub fn peek(&self,ep:Option<e_Pipe_io>) -> (Option<String>,Option<String>){
+    pub fn peek(&self,ep:Option<EPipeIo>) -> (Option<String>,Option<String>){
         if let Some(e) = ep{
             match e{
-                e_Pipe_io::Rx => {
+                EPipeIo::Rx => {
                     return (self.rx.last().cloned(),None);
                 },
-                e_Pipe_io::Tx => {
+                EPipeIo::Tx => {
                     return (None,self.tx.last().cloned());
                 }
             }
@@ -56,13 +56,13 @@ use uuid::Uuid;
         
     }
 
-    pub fn history(&self,ep:Option<e_Pipe_io>) -> (Option<String>,Option<String>){
+    pub fn history(&self,ep:Option<EPipeIo>) -> (Option<String>,Option<String>){
         if let Some(e) = ep{
             match e{
-                e_Pipe_io::Rx => {
+                EPipeIo::Rx => {
                     return (Some(self.rx.clone().join("\n\n")),None);
                 },
-                e_Pipe_io::Tx => {
+                EPipeIo::Tx => {
                     return (None,Some(self.tx.clone().join("\n\n")));
                 }
             }
@@ -71,20 +71,20 @@ use uuid::Uuid;
         }        
     }
 
-    pub fn len(&self,ep: e_Pipe_io) -> usize{
+    pub fn len(&self,ep: EPipeIo) -> usize{
         match ep{
-            e_Pipe_io::Rx => self.rx.len(),
-            e_Pipe_io::Tx => self.tx.len(),
+            EPipeIo::Rx => self.rx.len(),
+            EPipeIo::Tx => self.tx.len(),
         }
     }
 
-    pub fn pop(&self,ep:Option<e_Pipe_io>) -> (Option<String>,Option<String>){
+    pub fn pop(&self,ep:Option<EPipeIo>) -> (Option<String>,Option<String>){
         if let Some(e) = ep{
             match e{
-                e_Pipe_io::Rx => {
+                EPipeIo::Rx => {
                     return (self.rx.clone().pop(),None);
                 },
-                e_Pipe_io::Tx => {
+                EPipeIo::Tx => {
                     return (None,self.tx.clone().pop());
                 }
             }
@@ -640,13 +640,8 @@ use uuid::Uuid;
         graph
     }
 
-    pub fn perform(args: Vec<&str>) -> String{
-        let mut ret = "".to_string();
-        for (i,v) in args.iter().enumerate(){
-            if i == 0{
-                
-            }
-        }
+    pub fn perform(_args: Vec<&str>) -> String{
+        let ret = "".to_string();
         ret
     }
 
